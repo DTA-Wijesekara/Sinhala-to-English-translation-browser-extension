@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Translator Settings</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 320px; background-color: #f8f9fa; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; font-size: 18px; color: #333; }
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 14px; color: #555; }
+        select, input { width: 100%; padding: 8px; margin-top: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { margin-top: 20px; width: 100%; padding: 10px; background: #1a73e8; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #1557b0; }
+        #status { color: #1e8e3e; margin-top: 15px; font-size: 14px; text-align: center; height: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Quick Translator Settings</h2>
+        
+        <label for="modifierKey">Key to hold while selecting:</label>
+        <select id="modifierKey">
+            <option value="Alt">Alt Key</option>
+            <option value="Ctrl">Ctrl / Cmd Key</option>
+            <option value="Shift">Shift Key</option>
+        </select>
+
+        <label for="displayTime">Time to show translation (seconds):</label>
+        <input type="number" id="displayTime" min="1" max="20" value="8">
+
+        <button id="saveBtn">Save Preferences</button>
+        <div id="status"></div>
+    </div>
+    <script src="options.js"></script>
+</body>
+</html>
