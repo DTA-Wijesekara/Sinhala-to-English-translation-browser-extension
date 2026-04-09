@@ -3,25 +3,24 @@ let currentTimeout = null;
 
 // Listen for text selection
 document.addEventListener('mouseup', function(event) {
-    // 1. Fetch user settings from storage (Defaults: Alt key, 8 seconds)
-    chrome.storage.sync.get({ modifierKey: 'Alt', displayTime: 8 }, (settings) => {
+    // Fetch user settings, including the new extensionEnabled flag
+    chrome.storage.sync.get({ extensionEnabled: true, modifierKey: 'Alt', displayTime: 8 }, (settings) => {
+        
+        // THE KILL SWITCH: If the extension is disabled, stop right here.
+        if (!settings.extensionEnabled) return; 
         
         let keyMatched = false;
         if (settings.modifierKey === 'Alt' && event.altKey) keyMatched = true;
         if (settings.modifierKey === 'Ctrl' && (event.ctrlKey || event.metaKey)) keyMatched = true;
         if (settings.modifierKey === 'Shift' && event.shiftKey) keyMatched = true;
 
-        if (!keyMatched) return; // Stop if the correct key isn't held
+        if (!keyMatched) return; 
 
         const selectedText = window.getSelection().toString().trim();
 
-        // 2. Process text if it's a reasonable length
         if (selectedText.length > 0 && selectedText.length < 150) {
-            
-            // Show loading state immediately
             renderTooltip("Translating...", event.clientX, event.clientY, settings.displayTime);
 
-            // Send to background.js
             chrome.runtime.sendMessage(
                 { action: "translate", text: selectedText },
                 function(response) {
@@ -36,7 +35,6 @@ document.addEventListener('mouseup', function(event) {
     });
 });
 
-// Hide tooltip if the user clicks anywhere else on the page
 document.addEventListener('mousedown', function() {
     if (currentTooltip) {
         currentTooltip.remove();
@@ -51,7 +49,6 @@ function renderTooltip(text, x, y, displayTimeInSeconds) {
     currentTooltip = document.createElement('div');
     currentTooltip.innerText = text;
 
-    // Styling the tooltip
     Object.assign(currentTooltip.style, {
         position: 'fixed', 
         backgroundColor: '#202124', color: '#ffffff',
@@ -65,7 +62,6 @@ function renderTooltip(text, x, y, displayTimeInSeconds) {
 
     document.body.appendChild(currentTooltip);
 
-    // 3. Smart Positioning to keep it on screen
     const tooltipRect = currentTooltip.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
@@ -79,10 +75,8 @@ function renderTooltip(text, x, y, displayTimeInSeconds) {
     currentTooltip.style.left = `${finalX}px`;
     currentTooltip.style.top = `${finalY}px`;
 
-    // Fade in
     requestAnimationFrame(() => currentTooltip.style.opacity = '1');
 
-    // 4. Auto-remove timer based on settings
     currentTimeout = setTimeout(() => {
         if (currentTooltip) {
             currentTooltip.style.opacity = '0';
